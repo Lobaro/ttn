@@ -12,16 +12,16 @@ import (
 	"syscall"
 
 	pb "github.com/TheThingsNetwork/ttn/api/handler"
-	"github.com/TheThingsNetwork/ttn/core"
+	"github.com/TheThingsNetwork/ttn/core/component"
 	"github.com/TheThingsNetwork/ttn/core/handler"
 	"github.com/TheThingsNetwork/ttn/core/proxy"
 	"github.com/apex/log"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"golang.org/x/net/context"
+	"golang.org/x/net/context" // See https://github.com/grpc/grpc-go/issues/711"
 	"google.golang.org/grpc"
-	"gopkg.in/redis.v4"
+	"gopkg.in/redis.v5"
 )
 
 // handlerCmd represents the handler command
@@ -53,7 +53,7 @@ var handlerCmd = &cobra.Command{
 		connectRedis(client)
 
 		// Component
-		component, err := core.NewComponent(ctx, "handler", fmt.Sprintf("%s:%d", viper.GetString("handler.server-address-announce"), viper.GetInt("handler.server-port")))
+		component, err := component.New(ctx, "handler", fmt.Sprintf("%s:%d", viper.GetString("handler.server-address-announce"), viper.GetInt("handler.server-port")))
 		if err != nil {
 			ctx.WithError(err).Fatal("Could not initialize component")
 		}
